@@ -29,7 +29,12 @@ class MyBatiscfg extends DataFlow::Configuration {
   }
 }
 
-
+/*
 from MyBatiscfg cfg, DataFlow::PathNode source, DataFlow::PathNode sink
 where cfg.hasFlowPath(source, sink)
 select source, source, sink, "bad flow"
+*/
+
+from RefType paramType, Method setter
+where dangerousSetter(paramType, setter)
+select paramType, setter
