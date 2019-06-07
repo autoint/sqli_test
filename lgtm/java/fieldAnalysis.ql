@@ -1,25 +1,35 @@
 import java
+import semmle.code.java.dataflow.TaintTracking
+import DataFlow::PathGraph
 
 
 predicate dangerousSetter(RefType paramType, Method setter) {
   exists(XMLElement query, XMLCharacters chars, string field, string param |
-    query.hasName("select") and
-    query.getAttributeValue("parameterType").regexpFind("[a-zA-Z0-9]+$", _, _) = param and
-    chars = query.getACharactersSet() and
-    chars.getCharacters().regexpFind("\\$\\{[a-zA-Z0-9]+\\}", _, _).substring(2, -1) = field and
-    paramType.hasName(param) and
-    setter.getDeclaringType() = paramType and
-    setter.getName().toLowerCase() = "get" + field.toLowerCase()
+query.hasName("select")
+and  query.getAttributeValue("parameterType").regexpFind("[a-zA-Z0-9]+$", _, _) = param
+and query.getAChild().getACharactersSet().getCharacters().regexpFind("\\$\\{[a-zA-Z0-9]+\\}", _, _).regexpCapture("\\$\\{([a-zA-Z0-9]+)\\}", 1) = field
+and    paramType.hasName(param)
+and    setter.getDeclaringType() = paramType
+and     setter.getName().toLowerCase() = "get" + field.toLowerCase()
   )
 }
 
+class MyBatiscfg extends DataFlow::Configuration {
+  MyBatiscfg() { this = "MyBatis" }
 
-from XMLElement query, XMLCharacters chars, string field, string param, RefType paramType, Method setter
-where query.hasName("select") and
-    query.getAttributeValue("parameterType").regexpFind("[a-zA-Z0-9]+$", _, _) = param and
-    chars = query.getACharactersSet() and
-    chars.getCharacters().regexpFind("\\$\\{[a-zA-Z0-9]+\\}", _, _).substring(2, -1) = field and
-    paramType.hasName(param) and
-    setter.getDeclaringType() = paramType and
-    setter.getName().toLowerCase() = "get" + field.toLowerCase()
-select paramType, setter
+  override predicate isSource(DataFlow::Node source) {
+    any()
+  }
+
+  override predicate isSink(DataFlow::Node sink) {
+  	exists (RefType paramType, Method setter, MethodAccess ma |
+        dangerousSetter(paramType, setter) and
+        ma.getMethod() = setter and
+        sink.asExpr() = ma )
+  }
+}
+
+
+from MyBatiscfg cfg, DataFlow::PathNode source, DataFlow::PathNode sink
+where cfg.hasFlowPath(source, sink)
+select source, source, sink, "bad flow"
