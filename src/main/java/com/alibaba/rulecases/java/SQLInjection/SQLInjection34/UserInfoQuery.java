@@ -12,6 +12,10 @@ public class UserInfoQuery  {
 	public String getOrderBy() {
 		return orderBy.getValue();
 	}
+
+	public void setOrderBy(String value) {
+	      orderBy = OrderSortEnum.valueOf(value);	
+	}
 	
 	public Date getGmtCreate() {
 		return gmtCreate;

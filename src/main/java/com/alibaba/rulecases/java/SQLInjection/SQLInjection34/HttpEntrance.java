@@ -15,7 +15,7 @@ public class HttpEntrance {
 
 	public void execute(@Param("param") String param) throws Exception {
 		UserInfoQuery query = new UserInfoQuery();
-		//query.setOrderBy(param);
+		query.setOrderBy(param);
 		//query.setId(param);
 		fun(query);
 	}
