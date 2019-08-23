@@ -1,22 +1,22 @@
 package com.alibaba.rulecases.java.SQLInjection.SQLInjection34;
+
 import java.util.Date;
 
 public class UserInfoQuery  {
+	private String orderBy ;
 
 	private Date gmtCreate;
 
 	private Long id;
 
-	private OrderSortEnum orderBy = OrderSortEnum.GMT_CREATE_DESC;
-
 	public String getOrderBy() {
-		return orderBy.getValue();
+		return orderBy;
 	}
 
-	public void setOrderBy(String value) {
-	      orderBy = OrderSortEnum.valueOf(value);	
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
 	}
-	
+
 	public Date getGmtCreate() {
 		return gmtCreate;
 	}
@@ -31,22 +31,5 @@ public class UserInfoQuery  {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-}
-
-enum OrderSortEnum {
-
-	SKU_CODE_ASC("sku_code asc"),
-
-	GMT_CREATE_DESC("gmt_create DESC");
-
-	private String value;
-
-	OrderSortEnum(String value) {
-		this.value = value;
-	}
-
-	public String getValue() {
-		return value;
 	}
 }

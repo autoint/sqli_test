@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="resourceTextDAO">
+
+    <typeAlias alias="ResourceTextDO" type="com.wdk.alpha.model.resource.ResourceTextDO"/>
+
+    <resultMap class="ResourceTextDO" id="resultResourceTextMapping">
+        <result column="id" property="textid"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="text_name" property="textName"/>
+        <result column="title_color"   property="titleColor" />
+        <result column="sub_title"   property="subTitle" />
+        <result column="sub_title_color"   property="subTitleColor" />
+        <result column="has_link" property="hasLink"/>
+        <result column="link_url" property="linkUrl"/>
+        <result column="show_order" property="showOrder"/>
+        <result column="status" property="status"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="text_subname" property="textSubname"/>
+        <result column="shop_ids" property="shopIds"/>
+        <result column="updater" property="updater"/>
+        <result column="weight" property="weight"/>
+        <result column="type" property="type"/>
+        <result column="link_page_id" property="linkPageId"/>
+        <result column="rule_template_ids" property="ruleTemplateIds"/>
+        <result column="group_id" property="groupId"/>
+    </resultMap>
+
+    <typeAlias alias="ResourceDO" type="com.wdk.alpha.model.resource.ResourceDO"/>
+
+    <sql id="textField">
+		a.id as moduleId,
+		a.module_code as moduleCode,
+		a.module_type as moduleType,
+		a.module_name as moduleName,
+		c.id as resourceId,
+		c.text_name as resourceName,
+		c.title_color as titleColor,
+		c.sub_title as subTitle,
+		c.sub_title_color as subTitleColor,
+		c.updater as updater,
+		c.start_date as startDate,
+		c.end_date as endDate,
+		c.shop_ids as shopIds,
+		c.status as status,
+		c.link_url as resourceUrl,
+		c.weight as weight,
+		c.type as resourceType,
+		c.show_order as showOrder,
+		c.link_page_id as linkPageId
+	</sql>
+
+    <select id="queryWdkResourceTextCountByModuleId" parameterClass="Map" resultClass="java.lang.Integer">
+        select count(1) from wdk_resource_text where end_date > now() and now() > start_date
+        <dynamic>
+            <isNotEmpty property="textid" prepend="and">
+                id = #textid#
+            </isNotEmpty>
+            <isNotEmpty property="parentId" prepend="and">
+                parent_id = #parentId#
+            </isNotEmpty>
+            <isNotEmpty property="status" prepend="and">
+                status = #status#
+            </isNotEmpty>
+            <isNotNull property="shopIds" prepend="and">
+                (shop_ids = '' or shop_ids is null
+                <iterate property="shopIds" conjunction=" or " open=" or " close=")">
+                    shop_ids like concat('%',$shopIds[]$,'%')
+                </iterate>
+            </isNotNull>
+        </dynamic>
+    </select>
+
+</sqlMap>
