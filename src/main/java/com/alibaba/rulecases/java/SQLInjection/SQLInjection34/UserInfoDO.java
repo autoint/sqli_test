@@ -32,4 +32,3 @@ public class UserInfoDO {
 		this.name = name;
 	}
 }
-
